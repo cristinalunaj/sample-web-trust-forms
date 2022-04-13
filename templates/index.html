@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Rubik&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/styles.css') }}">
+
+<head>
+    <meta charset="UTF-8">
+
+    <title>TrustworthinessForm</title>
+    <div>
+        <h1>Trustworthiness Annotations</h1>
+        <p>{{description}}</p>
+    </div>
+
+
+    <form action="/personal_form">
+          <input type="submit" value="Continue >">
+    </form>
+
+    <p> If you click on the "Continue" button, you will move to the survey. Please, once you start the survey, complete it since data will not be saved if you don't press on the submit button. Thanks! :) </p>
+
+</head>
+<body>
+
+</body>
+</html>
