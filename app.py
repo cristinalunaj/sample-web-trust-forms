@@ -9,10 +9,7 @@ from helpers_back import *
 import os
 import psycopg2
 
-DATABASE_URL = os.environ[
-    'DATABASE_URL']  # "dbname=suppliers user=cris"  # os.environ['DATABASE_URL']    ### local: "dbname=suppliers user=cris" ## heroku: os.environ['DATABASE_URL']
-# Connect to database
-conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+
 
 ###############################
 
@@ -85,6 +82,12 @@ def finalForm():
     df_questions = pd.read_csv("static/extraInfo/questions.csv", sep=";", header=0)
     dict_conversions = {"-3 (Nothing)":-3, "-2":-2,"-1":-1,"0":0, "1":1,"2":2,"3 (A lot)":3, "Yes":True, "No":False}
     if request.method == 'POST':
+        ############# CREATE CONNECTION:
+        DATABASE_URL = os.environ['DATABASE_URL']  # "dbname=suppliers user=cris"  # os.environ['DATABASE_URL']    ### local: "dbname=suppliers user=cris" ## heroku: os.environ['DATABASE_URL']
+        # Connect to database
+        conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+        #################################
+
         create_table(conn, table_name=TABLE_NAME)
         complete_list_answers = []
         for video_i in range(N_VIDEOS):
@@ -103,16 +106,12 @@ def finalForm():
         #SAVE ANSWERS:
         complete_list_answers = [gender, studies, int(age), nationality, race]+complete_list_answers
         insert_annotation(conn,values2insert=complete_list_answers,table_name=TABLE_NAME)
-
-
-
-
+        conn.close()
 
     return render_template("final.html")
 
 if __name__ == "__main__":
-
     app.run()
-    conn.close()
+
 
 
