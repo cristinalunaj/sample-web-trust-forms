@@ -1,1 +1,1 @@
-web: gunicorn app:sample-web-trust
+web: gunicorn app:app
