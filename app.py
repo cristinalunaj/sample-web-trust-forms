@@ -9,6 +9,11 @@ from helpers_back import *
 import os
 import psycopg2
 
+DATABASE_URL = os.environ[
+    'DATABASE_URL']  # "dbname=suppliers user=cris"  # os.environ['DATABASE_URL']    ### local: "dbname=suppliers user=cris" ## heroku: os.environ['DATABASE_URL']
+# Connect to database
+conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+
 ###############################
 
 
@@ -106,9 +111,7 @@ def finalForm():
     return render_template("final.html")
 
 if __name__ == "__main__":
-    DATABASE_URL = os.environ['DATABASE_URL'] #"dbname=suppliers user=cris"  # os.environ['DATABASE_URL']    ### local: "dbname=suppliers user=cris" ## heroku: os.environ['DATABASE_URL']
-    # Connect to database
-    conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+
     app.run()
     conn.close()
 
