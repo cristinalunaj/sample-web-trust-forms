@@ -63,7 +63,6 @@ def template_videos_onfly(vid, start, end, vidName, videoID):
             finalTemplate += question
             if (row["TypeQuestion"] == "Option"):
                 type_opt = "radio"
-                extra_name=""
 
             elif (row["TypeQuestion"] == "MultiOption"): #Buscar checkbox
                 type_opt = "checkbox"

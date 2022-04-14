@@ -8,3 +8,4 @@ DESCRIPTION = "Thank you very much for your cooperation!  " \
                   "It is important that you rate each person in the videos objectively - specifically, " \
                   "<b>how</b> the information is expressed (the behaviour/action), and not what is said (the content of the message). \n Let's start!"
 N_VIDEOS = 2
+TABLE_NAME = "trusOMGTable"

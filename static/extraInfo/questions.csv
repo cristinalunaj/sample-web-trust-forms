@@ -6,7 +6,7 @@ Option;Comfortable;3. Assess if you think that the person is <strong>comfortable
 Option;VoiceAttractiveness;4. Assess the person's <strong>voice attractiveness </strong> of the person in the video.;[-3 (Nothing),-2,-1,0,1,2,3 (A lot)]
 Option;Kindness;5. Assess the <strong>kindness</strong> of the person, understanding kindness as a person that care about others, gentle, friendly and generous.;[-3 (Nothing),-2,-1,0,1,2,3 (A lot)]
 Option;Eloquent;6. Assess whether the person is <strong>eloquent and articulate</strong> -- whether he or she expresses her/his opinion or feelings well.;[-3 (Nothing),-2,-1,0,1,2,3 (A lot)]
-Option;Emotion;7. What <strong>emotion</strong> do you think he/she is expressing?;[Anger,Disgust,Fear,Happy,Neutral,Sad,Surprise]
+Option;Emotion;7. What <strong>emotion</strong> do you think he/she is expressing?;[Anger,Disgust,Fear,Happy,Neutral,Sad,Surprise,None]
 Option;Authenticity;8. Do you <strong>trust in the transmitted emotion</strong>? Does it seems credible, <strong>authentic</strong>?;[-3 (Nothing),-2,-1,0,1,2,3 (A lot)]
 Option;Trust;9. Would you <strong>trust this person</strong> after seeing this video?;[-3 (Nothing),-2,-1,0,1,2,3 (A lot)]
 MultiOption;ReasonTrust;10.  What would <strong>make you trust or distrust</strong> this person?;[Physical Appariency,Voice,Expressiveness,Comfort in front of the camera,Kindness,Eloquence,Emotion,Other]
