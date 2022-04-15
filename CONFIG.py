@@ -8,4 +8,4 @@ DESCRIPTION = "Thank you very much for your cooperation!  <br>" \
                   "<strong>how</strong> the information is expressed (the behaviour/action), and not what is said (the content of the message). <br> Let's start!"
 N_VIDEOS = 2
 TABLE_NAME = "trusOMGTable"
-DATABASE_URL = "dbname=suppliers user=cris"  #"dbname=suppliers user=cris" #os.environ['DATABASE_URL']  #"dbname=suppliers user=cris" # # "dbname=suppliers user=cris"  # os.environ['DATABASE_URL']    ### local: "dbname=suppliers user=cris" ## heroku: os.environ['DATABASE_URL']
+DATABASE_URL = "dbname=suppliers user=cris" #"dbname=suppliers user=cris"  #"dbname=suppliers user=cris" #os.environ['DATABASE_URL']  #"dbname=suppliers user=cris" # # "dbname=suppliers user=cris"  # os.environ['DATABASE_URL']    ### local: "dbname=suppliers user=cris" ## heroku: os.environ['DATABASE_URL']
