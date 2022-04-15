@@ -90,13 +90,13 @@ def finalForm():
         create_table(conn, table_name=TABLE_NAME)
         complete_list_answers = []
         for video_i in range(N_VIDEOS):
-            video_id = request.form["video"+str(video_i)]
+            video_id = request.form["Video"+str(video_i)]
             list_answers_video = [video_id]
             for i, row in df_questions.iterrows():
                 if(row["TypeQuestion"]=="MultiOption"):
-                    answerQuestion = ";".join(request.form.getlist(row["ID"]+"video"+str(video_i)))
+                    answerQuestion = ";".join(request.form.getlist(row["ID"]+"Video"+str(video_i)))
                 else:
-                    answerQuestion = request.form[row["ID"] + "video" + str(video_i)]
+                    answerQuestion = request.form[row["ID"] + "Video" + str(video_i)]
                     if(row["ID"]!="Emotion"): #convert to the correct type
                         answerQuestion = dict_conversions[answerQuestion]
 

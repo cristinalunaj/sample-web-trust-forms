@@ -47,7 +47,7 @@ def create_header_videos(gender, studies,age,nationality,race):
     <body>
     <div class="testbox">"""
 
-    form_def = """<form class="videosForm" action="/end", method="post">
+    form_def = """<form action="/end" method="post" class="videosForm">
             <div class="banner">
               <h1>Video Annotations</h1>
             </div>
