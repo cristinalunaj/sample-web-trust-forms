@@ -55,9 +55,16 @@ def videoAnnotationForm():
         #START HEADER OF THE VIDEO ANSWERING PAGE (AND FORM):
         finalTemplate = create_header_videos(gender, studies,age,nationality,race)
         #START QUESTION/ANSWERS AND VIDEOS ATTACHEMENT
+        # Load csv with questions to ask:
+        df_questions = pd.read_csv("static/extraInfo/questions.csv", sep=";", header=0)
+        #randomize questions except 1st and last questions and use the same order along the same form:
+        df_questions = pd.concat(
+            [df_questions[:1], df_questions[1:-1].sample(frac=1), pd.DataFrame(df_questions.tail(1))]).reset_index(
+            drop=True)
+
         n=0
         for i, video_i in df_selected_videos.iterrows():
-            finalTempl = template_videos_onfly(vid=video_i["vid"], start=str(int(video_i["start"])), end=str(math.ceil(video_i["end"])),vidName="Video"+str(n), videoID=video_i["video"])
+            finalTempl = template_videos_onfly(df_questions=df_questions,vid=video_i["vid"], start=str(int(video_i["start"])), end=str(math.ceil(video_i["end"])),vidName="Video"+str(n), videoID=video_i["video"])
             finalTemplate+=finalTempl
             n+=1
         #END FORM AND ADD SUBMIT BUTTON

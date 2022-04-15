@@ -7,7 +7,7 @@ import requests
 IFRAME_TEMPLATE = Template("""
     <div class="videoBox">
     <h2>${vidname}</h2>
-    <iframe src="https://www.youtube.com/embed/${youtube_id}?start=${start_time}&end=${end_time}&controls=0" width="853" height="480" frameborder="0" allowfullscreen></iframe>""")
+    <iframe id="${vidname}iframe" src="https://www.youtube.com/embed/${youtube_id}?start=${start_time}&end=${end_time}&controls=0" width="853" height="480" frameborder="0" allowfullscreen></iframe>""")
 
 OPTIONS_TEMPLATE_ANSWERS=Template("""<div>
                                         <input type="${type}" id="${opt_id}" name="${name}" value="${value}" ${requirement} />
@@ -43,6 +43,11 @@ def create_header_videos(gender, studies,age,nationality,race):
     <meta charset="UTF-8">
 
         <title>TrustworthinessFormIAnswers</title>
+        <script>
+            function playme(vidName) {
+            document.getElementById(vidName+"iframe").src = document.getElementById(vidName+"iframe").src;
+            }
+        </script>     
     </head>
     <body>
     <div class="testbox">"""
@@ -91,22 +96,24 @@ def html_radiobutton(question):
 
 
 
-def template_videos_onfly(vid, start, end, vidName, videoID):
+def template_videos_onfly(df_questions, vid, start, end, vidName, videoID):
     youtube_url = 'https://www.youtube.com/embed/' + vid +"?start="+start+"&end="+end
     video_avail = True
     if (is_url_ok(youtube_url)):
         ############## START WITH VIDEOS & QUESTIONS/OPTIONS...
         id_video = """<input type="hidden" id="{vidName}" name="{vidName}" value="{videoID}"/>""".format(vidName=vidName,videoID=videoID)
         iframe = IFRAME_TEMPLATE.substitute(youtube_id=vid, start_time=start, end_time=end, vidname=vidName)
-        finalTemplate = id_video + iframe
-        # Load csv:
-        df_questions = pd.read_csv("static/extraInfo/questions.csv", sep=";", header=0)
+        #Add button to play again the video:
+        button_html = """<button type="button" id="{vidName}button" onclick="playme('{vidName}')">Play Again</button>""".format(vidName=vidName)
 
+        finalTemplate = id_video + iframe +button_html
+
+        n_quest = 0
         # Option to randomize questions
         for i, row in df_questions.iterrows():
             options = row["Options"].replace("[", "").replace("]", "").split(",")
             #question = """<p>{id}</p>""".format(id=row["Text"])
-            header_radioButtions, end_radioButtons = html_radiobutton(row["Text"])
+            header_radioButtions, end_radioButtons = html_radiobutton(str(n_quest)+". " +row["Text"])
 
 
             finalTemplate += header_radioButtions
@@ -119,16 +126,17 @@ def template_videos_onfly(vid, start, end, vidName, videoID):
                 type_opt = "checkbox"
 
             #OPTIONS
-            n = 0
+            n_option = 0
             for single_option in options:
-                if(n==0 and type_opt=="radio"):
+                if(n_option==0 and type_opt=="radio"):
                     require = "required"
                 else:
                     require = ""
                 finalTemplate += OPTIONS_TEMPLATE_ANSWERS.substitute(type=type_opt,opt_id=row["ID"]+vidName+single_option,
                                                                        value=single_option, requirement=require, name=row["ID"]+vidName)
-                n+=1
+                n_option+=1
             finalTemplate+=end_radioButtons
+            n_quest+=1
         #End video.
         finalTemplate += """</div>"""
 
