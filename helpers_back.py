@@ -1,6 +1,5 @@
 import psycopg2
 import pandas as pd
-import CONFIG
 from CONFIG import N_VIDEOS
 
 
@@ -36,6 +35,8 @@ def remove_values_table(conn, table_name="trusttabletest"):
     cur.execute(command)
     conn.commit()
     cur.close()
+
+
 
 
 

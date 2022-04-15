@@ -1,66 +1,90 @@
 <!DOCTYPE html>
 <html lang="en">
 <link rel="preconnect" href="https://fonts.gstatic.com">
-<link href="https://fonts.googleapis.com/css2?family=Rubik&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/styles.css') }}">
+<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/styles_cool.css') }}">
 
 
 <head>
     <meta charset="UTF-8">
     <title>Personal Data</title>
-    <div>
-        <h1>Personal Data</h1>
-    </div>
 
+</head>
+<body>
+     <div class="testbox">
+         <form action="/video_form", method="post">
+          <div class="banner">
+            <h1>Personal Data</h1>
+          </div>
 
-    <form action="/video_form", method="post">
         <!--GENDER QUESTION-->
-        <div>
-            <p>Gender:</p>
-              <input type="radio" id="female" name="genderQ" value="Female" required>
-              <label for="female">Female</label><br>
 
-              <input type="radio" id="male" name="genderQ" value="Male">
-              <label for="male">Male</label><br>
-
-              <input type="radio" id="other" name="genderQ" value="Other">
-              <label for="other">Other</label>
+         <div class="question">
+           <p>Gender*</p>
+            <label></label>
+           <div class="question-answer">
+              <div>
+                <input type="radio" id="female" name="genderQ" value="Female" required />
+                <label for="female" class="radio"><span>Female</span></label>
+              </div>
+              <div>
+                <input type="radio" id="male" name="genderQ" value="Male" />
+                <label for="male" class="radio"><span>Male</span></label>
+              </div>
+             <div>
+                <input type="radio" id="other" name="genderQ" value="Other" />
+                <label for="other" class="radio"><span>Other</span></label>
+             </div>
+           </div>
         </div>
 
         <!--STUDY LEVEL QUESTION-->
-        <div>
-            <p> Which is the study level that you have finished? </p>
-             <input type="radio" id="PrimarySecond" name="StudyQ" value="Not primary or not Secondary Education" required>
-              <label for="PrimarySecond">Not primary or not Secondary Education</label><br>
-
-              <input type="radio" id="secondary" name="StudyQ" value="Secondary Education">
-              <label for="secondary">Secondary Education</label><br>
-
-              <input type="radio" id="UniversityNotComplete" name="StudyQ" value="University Studies (did not complete)">
-              <label for="UniversityNotComplete">University Studies (did not complete)</label>
-
-              <input type="radio" id="University" name="StudyQ" value="University Studies (degree)">
-              <label for="University">University Studies (degree)</label>
-
-              <input type="radio" id="PostGrade" name="StudyQ" value="Postgraduate Studies (MS, MBA, JD, PhD, MD ...)">
-              <label for="University">Postgraduate Studies (MS, MBA, JD, PhD, MD ...)</label>
-
-             <input type="radio" id="otherStudy" name="StudyQ" value="Other">
-             <label for="otherStudy">Other</label>
+        <div class="question">
+          <p>Which is the study level that you have finished?*</p>
+          <label></label>
+            <div class="question-answer">
+              <div>
+                <input type="radio" id="PrimarySecond" name="StudyQ" value="Not primary or not Secondary Education" required/>
+                <label for="PrimarySecond" class="radio"><span>Not primary or not Secondary Education</span></label>
+              </div>
+             <div>
+                <input type="radio" id="secondary" name="StudyQ" value="Secondary Education"/>
+               <label for="secondary" class="radio"><span>Secondary Education</span></label>
+             </div>
+             <div>
+                <input type="radio" id="UniversityNotComplete" name="StudyQ" value="University Studies (did not complete)"/>
+               <label for="UniversityNotComplete" class="radio"><span>University Studies (did not complete)</span></label>
+             </div>
+             <div>
+                <input type="radio" id="University" name="StudyQ" value="University Studies (degree)"/>
+               <label for="University" class="radio"><span>University Studies (degree)</span></label>
+             </div>
+             <div>
+                <input type="radio" id="PostGrade" name="StudyQ" value="Postgraduate Studies (MS, MBA, JD, PhD, MD ...)"/>
+                <label for="University" class="radio"><span>Postgraduate Studies (MS, MBA, JD, PhD, MD ...)</span></label>
+             </div>
+             <div>
+               <input type="radio" id="otherStudy" name="StudyQ" value="Other"/>
+               <label for="otherStudy" class="radio"><span>Other</span></label>
+             </div>
+           </div>
         </div>
         <!--AGE QUESTION-->
-        <div>
-        <label for="AgeQ">Age:</label>
-        <input type="number" id="AgeQ" name="AgeQ" min="1" required>
+        <div class="item">
+          <p>Age<span>*</span></p>
+          <label for="AgeQ"></label>
+          <input type="number" id="AgeQ" name="AgeQ" min="1" required>
         </div>
+
 
 
 
          <!--NATIONALITY QUESTION-->
-        <div>
-            <label for="nationalityQ">Nationality:</label>
+        <div class="item">
+          <p>Nationality<span>*</span></p>
+            <label for="nationalityQ"></label>
             <select name="nationalityQ" id="nationalityQ" required>
-              <option value="">-- select one --</option>
+              <option value="">-- Select One --</option>
               <option value="afghan">Afghan</option>
               <option value="albanian">Albanian</option>
               <option value="algerian">Algerian</option>
@@ -257,27 +281,28 @@
         </div>
 
 
-         <div>
-            <label for="RaceQ">Race:</label>
+         <div class="item">
+           <p>Race<span>*</span></p>
+            <label for="RaceQ"></label>
             <select name="RaceQ" id="RaceQ" required>
-              <option value="">-- select one --</option>
+              <option value="">-- Select One --</option>
               <option value="notApply">Not Apply</option>
               <option value="caucasian">Caucasian</option>
               <option value="malay">Malay</option>
               <option value="indian">Indian</option>
-                <option value="chinese">Chinese</option>
+              <option value="chinese">Chinese</option>
             </select>
         </div>
 
+          <div class="btn-block">
+            <button type="submit"> Continue >> </button>
+          </div>
 
 
-          <input type="submit" value="Submit">
+      <p class="footnote">If you click on the "Continue" button. You will start the video's annotations.</p>
     </form>
+  </div>
 
-    <p>If you click the "Submit" button. You will start the video's annotations.</p>
-
-</head>
-<body>
 
 </body>
 </html>

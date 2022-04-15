@@ -3,3 +3,5 @@
 
 # Ada Library Information
 *.ali
+/README_NOT_UPLOAD.md
+/pruebas.py

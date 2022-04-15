@@ -21,9 +21,8 @@ python app.py
 * (he application is now deployed. Ensure that at least one instance of the app is running:) heroku ps:scale web=1
 * heroku open -a sample-web-trust
 * heroku logs -a sample-web-trust
-* heroku connect:diagnose --verbose -a sample-web-trust
+* heroku connect:diagnose --verbose -a 
 * heroku addons (check plans/DB associated to the app)
-
 
 
 ## psql

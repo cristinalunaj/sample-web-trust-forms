@@ -57,11 +57,11 @@ def videoAnnotationForm():
         #START QUESTION/ANSWERS AND VIDEOS ATTACHEMENT
         n=0
         for i, video_i in df_selected_videos.iterrows():
-            finalTempl = template_videos_onfly(vid=video_i["vid"], start=str(int(video_i["start"])), end=str(math.ceil(video_i["end"])),vidName="video"+str(n), videoID=video_i["video"])
+            finalTempl = template_videos_onfly(vid=video_i["vid"], start=str(int(video_i["start"])), end=str(math.ceil(video_i["end"])),vidName="Video"+str(n), videoID=video_i["video"])
             finalTemplate+=finalTempl
             n+=1
         #END FORM AND ADD SUBMIT BUTTON
-        form_end = """<input type="submit" value="Submit"></form>"""
+        form_end = create_end_videos()
         finalTemplate += form_end
         return finalTemplate
 
@@ -83,7 +83,6 @@ def finalForm():
     dict_conversions = {"-3 (Nothing)":-3, "-2":-2,"-1":-1,"0":0, "1":1,"2":2,"3 (A lot)":3, "Yes":True, "No":False}
     if request.method == 'POST':
         ############# CREATE CONNECTION:
-        DATABASE_URL = os.environ['DATABASE_URL']  # "dbname=suppliers user=cris"  # os.environ['DATABASE_URL']    ### local: "dbname=suppliers user=cris" ## heroku: os.environ['DATABASE_URL']
         # Connect to database
         conn = psycopg2.connect(DATABASE_URL, sslmode='require')
         #################################
