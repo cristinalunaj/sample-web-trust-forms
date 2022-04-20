@@ -84,6 +84,24 @@ def is_url_ok(url):
     return 200 == requests.head(url).status_code
 
 
+def try_site(url):
+    new_url = url
+    pattern = '"playabilityStatus":{"status":"ERROR""' #,"reason":"Video unavailable
+    pattern_private = '"playabilityStatus":{"status":"LOGIN_REQUIRED","messages":["Ini video peribadi.'
+    request = requests.get(url, allow_redirects=False)
+    if (not(pattern in request.text) and (not (pattern_private in request.text))and request.status_code == 200):
+        return True
+    elif(pattern in request.text):
+        print("Error")
+        return False, new_url
+    elif(request.status_code == 303):
+        newrequest = requests.get(url, allow_redirects=True)
+        new_url = newrequest.url
+        return True, new_url
+    else:
+        return False, new_url
+
+
 def html_radiobutton(question):
     header_radioButtion = """<div class="question">
            <p>{question}*</p>
