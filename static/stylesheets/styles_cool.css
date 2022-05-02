@@ -103,6 +103,12 @@ body, div, form, input, select, textarea, label {
       .item span {
       color: red;
       }
+
+      .questionText {
+       color: red;
+
+      }
+
       input[type="date"]::-webkit-inner-spin-button {
       display: none;
       }
@@ -139,7 +145,7 @@ body, div, form, input, select, textarea, label {
       margin: 5px 20px 15px 20px;
       cursor: pointer;
       }
-      .question span {
+      .question-answer span {
       margin-left: 30px;
 
       }

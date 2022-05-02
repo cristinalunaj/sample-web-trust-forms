@@ -39,4 +39,3 @@ python app.py
 4. CREATE TABLE test (id serial PRIMARY KEY, num integer, data varchar);
 5. SELECT * FROM test;
 
-

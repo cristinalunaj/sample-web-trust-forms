@@ -16,31 +16,36 @@
           <div class="banner">
             <h1>Personal Data</h1>
           </div>
+        <!--ANNOTATOR ID-->
+         <div class="item">
+          <p>Annotator id (Max. 10 characters) <span>*</span></p>
+          <label for="AgeQ"></label>
+          <input type="text" id="AnnotatorIDQ" name="AnnotatorIDQ" maxlength="10" placeholder="It can be a nickname, identity card, passport number... It will only be used to check that users only sent 1 answer." required>
+        </div>
+
+
 
         <!--GENDER QUESTION-->
 
          <div class="question">
-           <p>Gender*</p>
+           <p>Gender <span class="questionText">*</span></p>
             <label></label>
            <div class="question-answer">
               <div>
-                <input type="radio" id="female" name="genderQ" value="Female" required />
+                <input type="radio" id="female" name="genderQ" value="Female" required checked/>
                 <label for="female" class="radio"><span>Female</span></label>
               </div>
               <div>
                 <input type="radio" id="male" name="genderQ" value="Male" />
                 <label for="male" class="radio"><span>Male</span></label>
               </div>
-             <div>
-                <input type="radio" id="other" name="genderQ" value="Other" />
-                <label for="other" class="radio"><span>Other</span></label>
-             </div>
+
            </div>
         </div>
 
         <!--STUDY LEVEL QUESTION-->
         <div class="question">
-          <p>Which is the study level that you have finished?*</p>
+          <p>What is your completed level of study? <span class="questionText">*</span></p>
           <label></label>
             <div class="question-answer">
               <div>
@@ -64,14 +69,14 @@
                 <label for="PostGrade" class="radio"><span>Postgraduate Studies (MS, MBA, JD, PhD, MD ...)</span></label>
              </div>
              <div>
-               <input type="radio" id="otherStudy" name="StudyQ" value="Other"/>
+               <input type="radio" id="otherStudy" name="StudyQ" value="Other" checked/>
                <label for="otherStudy" class="radio"><span>Other</span></label>
              </div>
            </div>
         </div>
         <!--AGE QUESTION-->
         <div class="item">
-          <p>Age<span>*</span></p>
+          <p>Age <span>*</span></p>
           <label for="AgeQ"></label>
           <input type="number" id="AgeQ" name="AgeQ" min="1" required>
         </div>
@@ -81,7 +86,7 @@
 
          <!--NATIONALITY QUESTION-->
         <div class="item">
-          <p>Nationality<span>*</span></p>
+          <p>Nationality <span>*</span></p>
             <label for="nationalityQ"></label>
             <select name="nationalityQ" id="nationalityQ" required>
               <option value="">-- Select One --</option>
@@ -282,11 +287,12 @@
 
 
          <div class="item">
-           <p>Race<span>*</span></p>
+           <p>Ethnic (Just if you chose Malaysian as your nationality) <span>*</span></p>
             <label for="RaceQ"></label>
             <select name="RaceQ" id="RaceQ" required>
               <option value="">-- Select One --</option>
-              <option value="notApply">Not Apply</option>
+              <option value="notApply" selected="selected">Not Apply</option>
+              <option value="notApply" selected="selected">Not Apply</option>
               <option value="caucasian">Caucasian</option>
               <option value="malay">Malay</option>
               <option value="indian">Indian</option>

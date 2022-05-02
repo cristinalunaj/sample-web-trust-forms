@@ -41,6 +41,7 @@ def videoAnnotationForm():
 
     if request.method == 'POST':
         #Access to fields by its name
+        annotatorID = request.form['AnnotatorIDQ']
         gender = request.form['genderQ']
         studies = request.form['StudyQ']
         age = request.form['AgeQ']
@@ -50,16 +51,16 @@ def videoAnnotationForm():
 
         #Get videos web:
         df_videos = pd.read_csv("static/extraInfo/videos.csv", sep=",", header=0)
-        df_selected_videos = get_random_videos(df_videos, n_videos=N_VIDEOS)
+        df_selected_videos = get_random_VA_videos_OMG(df_videos, n_videos=N_VIDEOS)#get_random_videos(df_videos, n_videos=N_VIDEOS)
 
         #START HEADER OF THE VIDEO ANSWERING PAGE (AND FORM):
-        finalTemplate = create_header_videos(gender, studies,age,nationality,race)
+        finalTemplate = create_header_videos(annotatorID, gender, studies,age,nationality,race)
         #START QUESTION/ANSWERS AND VIDEOS ATTACHEMENT
         # Load csv with questions to ask:
         df_questions = pd.read_csv("static/extraInfo/questions.csv", sep=";", header=0)
         #randomize questions except 1st and last questions and use the same order along the same form:
         df_questions = pd.concat(
-            [df_questions[:1], df_questions[1:-1].sample(frac=1), pd.DataFrame(df_questions.tail(1))]).reset_index(
+            [df_questions[:1], df_questions[1:-3].sample(frac=1), pd.DataFrame(df_questions.tail(3))]).reset_index(
             drop=True)
 
         n=0
@@ -73,12 +74,17 @@ def videoAnnotationForm():
         return finalTemplate
 
 
+def filter_answers(answer):
+    return answer.split("(")[0].strip()
+
+
 #Video Form
 @app.route("/end", methods = ['POST'])
 def finalForm():
     # Render HTML with count variable
     #GET USERS INFO ####################
     # Access to fields by its name
+    annotatorID = request.form['annotatorID']
     gender = request.form['gender']
     studies = request.form['studies']
     age = request.form['age']
@@ -87,7 +93,9 @@ def finalForm():
 
     #GET VIDEOS INFO ##################
     df_questions = pd.read_csv("static/extraInfo/questions.csv", sep=";", header=0)
-    dict_conversions = {"-3 (Nothing)":-3, "-2":-2,"-1":-1,"0":0, "1":1,"2":2,"3 (A lot)":3, "Yes":True, "No":False}
+    dict_conversions = {"-3":-3, "-2":-2,"-1":-1,"0":0, "1":1,"2":2,"3":3, "Yes":True, "No":False}
+    #TO DO -> EXTRA FILTER FOR ALL THE OPTIONS TO REMOVE PARENTHESIS OF ANSWERS
+
     if request.method == 'POST':
         ############# CREATE CONNECTION:
         # Connect to database
@@ -105,12 +113,18 @@ def finalForm():
                 else:
                     answerQuestion = request.form[row["ID"] + "Video" + str(video_i)]
                     if(row["ID"]!="Emotion"): #convert to the correct type
-                        answerQuestion = dict_conversions[answerQuestion]
+                        #answerQuestion = dict_conversions[answerQuestion]
+                        answerQuestion = dict_conversions[filter_answers(answerQuestion)]
 
                 list_answers_video.append(answerQuestion)
+            #Add last textArea info:
+            answerQuestion = request.form["TextArea" + "Video" +str(video_i)]
+            list_answers_video.append(answerQuestion)
+
+
             complete_list_answers+=list_answers_video
         #SAVE ANSWERS:
-        complete_list_answers = [gender, studies, int(age), nationality, race]+complete_list_answers
+        complete_list_answers = [annotatorID, gender, studies, int(age), nationality, race]+complete_list_answers
         insert_annotation(conn,values2insert=complete_list_answers,table_name=TABLE_NAME)
         conn.close()
 
