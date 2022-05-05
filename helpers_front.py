@@ -3,6 +3,7 @@ import random
 from string import Template
 import requests
 import numpy as np
+import pickle
 
 
 IFRAME_TEMPLATE = Template("""
@@ -20,6 +21,13 @@ OTHER_TEMPLATE_OPTION=Template("""<div>
             <textarea rows = "2" cols = "60" id="${opt_id}" name="${name}" placeholder="If you selected 'Other' option, enter details here ... "></textarea></div>""")
 
 DEFAULT_CHECKED_OPTIONS = ["0 (Nothing)", "Neutral", "Yes", "Other"]
+
+
+
+
+
+
+
 def get_random_videos(df_videos, n_videos=10):
     selected_videos_df = pd.DataFrame([], columns=df_videos.columns)
     videos_ids = list(df_videos["vid"].unique())
@@ -68,18 +76,52 @@ def get_random_strategies(list2select, listProbabilities=[]):
     return random_sample
 
 
+def create_probability_table():
+    #MODIFY PROB_TABLE:
+    df_labels = pd.read_csv("static/extraInfo/videos.csv", sep=",", header=0)
+    prob_matrix = np.zeros((8, 7))
+    valence_ranges = [-0.4, -0.2, 0, 0.2, 0.4, 0.6, 1]  # last steps bigger to collapse ex
+    arousal_ranges = [0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 1]
+    last_valence = -1
+    last_arousal = 0
+    for valence_index in range(0,
+                               len(valence_ranges)):  # As not enough samples in some cases, we collapse some extreme categories
+        valence_value = valence_ranges[valence_index]
+        for arousal_index in range(0, len(arousal_ranges)):
+            arousal_value = arousal_ranges[arousal_index]
+            videos_per_square = df_labels.loc[
+                (df_labels['valence'] > last_valence) & (df_labels['valence'] <= valence_value) & (
+                            df_labels['arousal'] > last_arousal) & (df_labels['arousal'] <= arousal_value)]
+            # Add probabilities per square:
+            prob_matrix[len(arousal_ranges) - arousal_index - 1, valence_index] = np.ceil(
+                100 * len(videos_per_square) / len(df_labels))
+            last_arousal = arousal_value
+        last_valence = valence_value
+
+    # Convert probs in ranges:
+    last_val = 0
+    for valence_index in range(0,
+                               len(valence_ranges)):  # As not enough samples in some cases, we collapse some extreme categories
+        for arousal_index in range(0, len(arousal_ranges)):
+            prob_matrix[arousal_index, valence_index] += last_val
+            last_val = prob_matrix[arousal_index, valence_index]
+    print("NEW MATRIX: ", prob_matrix)
+    #GENERATED MATRIX:
+    with open('static/extraInfo/videosProbMatrix.pkl', 'wb') as f:
+        pickle.dump(prob_matrix, f)
+
+
+
+
+
+
 def get_random_VA_videos_OMG(df_videos,  n_videos=10):
     valence_ranges = [-0.4, -0.2, 0, 0.2, 0.4, 0.6, 1]  # last steps bigger to collapse ex
     arousal_ranges = [1, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2]
-    prob_matrix=np.array([[0.,7.,18.,38.,63.,89.,108.],
-                          [0.,7.,19.,39.,65.,92.,111.],
-                          [1.,8.,21.,41.,69.,96.,113.],
-                          [2.,10.,24.,46.,73.,99.,114.],
-                          [4.,13.,29.,53.,79.,102.,116.],
-                          [5.,16.,34.,58.,85.,104.,117.],
-                          [6.,18.,38.,62.,88.,105.,117.],
-                          [7.,18.,38.,62.,88.,105.,117.]])#Choose random number
-    random_number = 0#random.randint(0, 116)
+    with open('static/extraInfo/videosProbMatrix.pkl', 'rb') as f:
+        prob_matrix = pickle.load(f)
+    random_number = random.randint(0, np.max(np.max(prob_matrix))) #Random number to select the V/A box
+    print("RN: ", str(random_number))
     last_value = 0
     found = False
     #Get arousal&valence indexes:
@@ -187,28 +229,30 @@ def get_VA_videos(arousal_ranges, valence_ranges, arousal_index, valence_index, 
 
 
 
-
-
-def create_header_videos(annotatorID, gender, studies,age,nationality,race):
-
+def create_header_HTML():
     hed = """<!DOCTYPE html>
-    <html lang="en">
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
-    <link rel="stylesheet" href="/static/stylesheets/styles_cool.css">
-    
-    <head>
-    <meta charset="UTF-8">
+       <html lang="en">
+       <link rel="preconnect" href="https://fonts.gstatic.com">
+       <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
+       <link rel="stylesheet" href="/static/stylesheets/styles_cool.css">
 
-        <title>TrustworthinessFormIAnswers</title>
-        <script>
-            function playme(vidName) {
-            document.getElementById(vidName+"iframe").src = document.getElementById(vidName+"iframe").src;
-            }
-        </script>     
-    </head>
-    <body>
-    <div class="testbox">"""
+       <head>
+       <meta charset="UTF-8">
+
+           <title>TrustworthinessFormIAnswers</title>
+           <script>
+               function playme(vidName) {
+               document.getElementById(vidName+"iframe").src = document.getElementById(vidName+"iframe").src;
+               }
+           </script>     
+       </head>
+       <body>
+       <div class="testbox">"""
+    return hed
+
+def create_header_videos(annotatorID, gender, englishLevel, studies,age,nationality,race):
+    hed = create_header_HTML()
+
 
     form_def = """<form action="/end" method="post" class="videosForm">
             <div class="banner">
@@ -219,6 +263,7 @@ def create_header_videos(annotatorID, gender, studies,age,nationality,race):
     #Add hidden fields to save user info:
     form_def += """<input type="hidden" id="annotatorID" name="annotatorID" value="{annotatorID}"/>""".format(annotatorID=annotatorID)
     form_def+="""<input type="hidden" id="gender" name="gender" value="{gender}"/>""".format(gender=gender)
+    form_def += """<input type="hidden" id="englishLevel" name="englishLevel" value="{englishLevel}"/>""".format(englishLevel=englishLevel)
     form_def += """<input type="hidden" id="studies" name="studies" value="{studies}"/>""".format(studies=studies)
     form_def += """<input type="hidden" id="age" name="age" value="{age}"/>""".format(age=age)
     form_def += """<input type="hidden" id="nationality" name="nationality" value="{nationality}"/>""".format(nationality=nationality)
@@ -317,3 +362,11 @@ def template_videos_onfly(df_questions, vid, start, end, vidName, videoID):
     finalTemplate+= OTHER_TEMPLATE_OPTION.substitute(opt_id="TextArea"+vidName, name="TextArea"+vidName)
     finalTemplate += """</div>"""
     return finalTemplate
+
+
+
+
+
+
+
+#################################### CHECK ANNOTATIONS #######################################

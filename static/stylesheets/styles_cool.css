@@ -268,3 +268,10 @@ body, div, form, input, select, textarea, label {
       background: #FEF9E7;
       box-shadow: 0 0 8px  #cc7a00;
    }
+
+
+
+   table, th, td {
+      border: 1px solid black;
+         text-align:center
+      }

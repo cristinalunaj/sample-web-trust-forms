@@ -9,11 +9,7 @@ from helpers_back import *
 import os
 import psycopg2
 
-
-
 ###############################
-
-
 app = Flask(__name__)
 
 
@@ -22,8 +18,6 @@ app = Flask(__name__)
 @app.route("/")
 def index():
     return render_template("index.html", description=DESCRIPTION)
-
-
 
 #Personal Data
 @app.route("/personal_form", methods = ['POST', 'GET'])
@@ -37,12 +31,11 @@ def personalDataForm():
 def videoAnnotationForm():
     # Render HTML with count variable
     #Get data from user:
-
-
     if request.method == 'POST':
         #Access to fields by its name
         annotatorID = request.form['AnnotatorIDQ']
         gender = request.form['genderQ']
+        englishLevel = request.form['englishLevelQ']
         studies = request.form['StudyQ']
         age = request.form['AgeQ']
         nationality = request.form['nationalityQ']
@@ -54,7 +47,7 @@ def videoAnnotationForm():
         df_selected_videos = get_random_VA_videos_OMG(df_videos, n_videos=N_VIDEOS)#get_random_videos(df_videos, n_videos=N_VIDEOS)
 
         #START HEADER OF THE VIDEO ANSWERING PAGE (AND FORM):
-        finalTemplate = create_header_videos(annotatorID, gender, studies,age,nationality,race)
+        finalTemplate = create_header_videos(annotatorID, gender, englishLevel, studies,age,nationality,race)
         #START QUESTION/ANSWERS AND VIDEOS ATTACHEMENT
         # Load csv with questions to ask:
         df_questions = pd.read_csv("static/extraInfo/questions.csv", sep=";", header=0)
@@ -86,6 +79,7 @@ def finalForm():
     # Access to fields by its name
     annotatorID = request.form['annotatorID']
     gender = request.form['gender']
+    englishLevel = request.form['englishLevel']
     studies = request.form['studies']
     age = request.form['age']
     nationality = request.form['nationality']
@@ -124,11 +118,103 @@ def finalForm():
 
             complete_list_answers+=list_answers_video
         #SAVE ANSWERS:
-        complete_list_answers = [annotatorID, gender, studies, int(age), nationality, race]+complete_list_answers
+        complete_list_answers = [annotatorID, gender, englishLevel, studies, int(age), nationality, race]+complete_list_answers
         insert_annotation(conn,values2insert=complete_list_answers,table_name=TABLE_NAME)
         conn.close()
 
     return render_template("final.html")
+
+
+
+
+#Video Form
+@app.route("/checkAnnotations", methods = ['GET','POST'])
+def checkAnnotations():
+    if request.method == 'GET':
+        finalTemplate = get_checkAnnotations()
+
+    elif request.method == 'POST':
+        #Get data and repeat the same:
+        videoID = request.form['id']
+        actionvideo = request.form['action2do']
+        df_videos = pd.read_csv("static/extraInfo/videos.csv", sep=",", header=0)
+        if(actionvideo == "Recover"):
+            df_videos_backup = pd.read_csv("static/extraInfo/videos_backup.csv", sep=",", header=0)
+            video2recover = df_videos_backup.loc[df_videos_backup["video"] == videoID]
+            df_videos = df_videos.append(pd.DataFrame(video2recover, columns=df_videos.columns))
+        else: #Remove
+            # Remove video from videos.csv
+            df_videos = df_videos.loc[df_videos["video"] != videoID]
+
+        #Save:
+        df_videos.to_csv("static/extraInfo/videos.csv", sep=",", header=True, index=False)
+        #Calculate prob matrix again:
+        create_probability_table()
+
+
+        finalTemplate = get_checkAnnotations()
+
+
+    return finalTemplate
+
+
+def get_checkAnnotations():
+    # Get annotations:
+    hed = create_header_HTML()
+    ############# CREATE CONNECTION:
+    # Connect to database
+    conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+    #################################
+    dict_annotations = count_annotations(conn, table_name=TABLE_NAME)
+    conn.close()
+    # Check for differences between backup_videos and videos:
+    df_videos_backup = pd.read_csv("static/extraInfo/videos_backup.csv", sep=",", header=0)
+    df_videos = pd.read_csv("static/extraInfo/videos.csv", sep=",", header=0)
+    videosOnlyInBackup = set(list(df_videos_backup["video"])).difference(set(list(df_videos["video"])))
+
+    html = '<table><tr>' \
+           '<th> Form </th>' \
+           '<th> VideoID </th>' \
+           '<th> Counter </th>' \
+           '<th> Remove/Recover Video </th>' \
+           '</tr>'
+
+
+    for key in list(dict_annotations.keys()):
+        if (dict_annotations[key] >= MINANNOTATIONS):
+            style2add = 'style="color:red;"'
+        else:
+            style2add = ''
+
+        if(key in videosOnlyInBackup):
+            tagButton = "Recover"
+        else:
+            tagButton = "Remove"
+
+        html += '<tr>' \
+                '<td><form id="formv'+str(key)+'" method="post" action="/checkAnnotations"><input type="hidden" name="id" value="'+str(key)+'" /><input type="hidden" name="action2do" value="'+str(tagButton)+'" /></form></td>' \
+                '<td>' + str(key) + '</td>' \
+                '<td ' + style2add + '>' + str(dict_annotations[key]) + '</td>' \
+                '<td><input class="btn-block" form="formv'+str(key)+'" type="submit" id="v' + key + '" value="'+tagButton+'"></td>'    \
+                '</tr>'
+    html += '</table>'
+    #
+    #'<td><form action="/checkAnnotations" method="post"><input type="submit" class="btn-block" value="Remove"></form></td>' \
+
+    finalTemplate = hed + html + """</div></body></html>"""
+    return finalTemplate
+
+
+
+
+
+
+
+
+
+
+
+
 
 if __name__ == "__main__":
     app.run()

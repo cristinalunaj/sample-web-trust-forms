@@ -7,7 +7,7 @@ def create_table(conn, table_name="trustTable"):
     cur = conn.cursor()
     df_questions = pd.read_csv("static/extraInfo/questions.csv", sep=";", header=0)
     type_question = ["bool", "smallint", "smallint","smallint","smallint","smallint","smallint","varchar","smallint","smallint","varchar"]
-    command ="CREATE TABLE IF NOT EXISTS "+table_name+" (id serial PRIMARY KEY, AnnotatorID varchar, gender varchar, studyLevel varchar, age smallint, nationality varchar, race varchar"
+    command ="CREATE TABLE IF NOT EXISTS "+table_name+" (id serial PRIMARY KEY, AnnotatorID varchar, gender varchar, englishLevel varchar, studyLevel varchar, age smallint, nationality varchar, race varchar"
 
     for videoi in range(N_VIDEOS):
         command += ", IDv" + str(videoi) + " varchar"
@@ -21,6 +21,9 @@ def create_table(conn, table_name="trustTable"):
     cur.execute(end_command)
     conn.commit()
     cur.close()
+
+
+
 
 
 def export_table_data(conn, csvpath, table_name="trustTable"):
@@ -45,16 +48,36 @@ def remove_values_table(conn, table_name="trusttable"):
 def insert_annotation(conn, values2insert=[], table_name="trusttable"):
     cur = conn.cursor()
     df_questions = pd.read_csv("static/extraInfo/questions.csv", sep=";", header=0)
-    command = "INSERT INTO "+table_name+" (annotatorID, gender, studylevel, age, nationality, race"
+    command = "INSERT INTO "+table_name+" (annotatorID, gender, englishLevel, studylevel, age, nationality, race"
 
     for videoi in range(N_VIDEOS):
         command += ", IDv" + str(videoi)
         for i, rowQuestion in df_questions.iterrows():
             command+=", "+rowQuestion["ID"]+"v"+str(videoi)
         command += ", otherTextAreav" + str(videoi)
-    command += ") VALUES (%s, %s, %s, %s, %s, %s" + "".join([", %s"]*N_VIDEOS*(len(df_questions)+2))+")"
+    command += ") VALUES (%s, %s, %s, %s, %s, %s, %s" + "".join([", %s"]*N_VIDEOS*(len(df_questions)+2))+")"
     cur.execute(command, values2insert)
     conn.commit()
     cur.close()
+
+
+
+
+def count_annotations(conn, table_name="trusttable"):
+    cur = conn.cursor()
+    df_videosComplete = pd.read_csv("static/extraInfo/videos_backup.csv", sep=",", header=0)
+    dict_videos = dict.fromkeys(df_videosComplete["video"], 0)
+
+    for i in range(N_VIDEOS):
+        command = "SELECT IDv"+str(i)+", count(*) FROM "+table_name+" GROUP BY IDv"+str(i)+";"
+        cur.execute(command)
+        mobile_records = cur.fetchall()
+        for row in mobile_records:
+            dict_videos[row[0]]+=row[1]
+
+    conn.commit()
+    cur.close()
+    return dict_videos
+
 
 
