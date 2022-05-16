@@ -4,6 +4,7 @@ import math
 from CONFIG import *
 from helpers_front import *
 from helpers_back import *
+import time
 
 ########## DATABASE CONNECTIONS
 import os
@@ -40,14 +41,14 @@ def videoAnnotationForm():
         age = request.form['AgeQ']
         nationality = request.form['nationalityQ']
         race = request.form['RaceQ']
-
+        currentTimestamp = int(time.time())
 
         #Get videos web:
         df_videos = pd.read_csv("static/extraInfo/videos.csv", sep=",", header=0)
         df_selected_videos = get_random_VA_videos_OMG(df_videos, n_videos=N_VIDEOS)#get_random_videos(df_videos, n_videos=N_VIDEOS)
 
         #START HEADER OF THE VIDEO ANSWERING PAGE (AND FORM):
-        finalTemplate = create_header_videos(annotatorID, gender, englishLevel, studies,age,nationality,race)
+        finalTemplate = create_header_videos(annotatorID, gender, englishLevel, studies,age,nationality,race, currentTimestamp)
         #START QUESTION/ANSWERS AND VIDEOS ATTACHEMENT
         # Load csv with questions to ask:
         df_questions = pd.read_csv("static/extraInfo/questions.csv", sep=";", header=0)
@@ -84,6 +85,9 @@ def finalForm():
     age = request.form['age']
     nationality = request.form['nationality']
     race = request.form['race']
+    currentTimestamp = request.form['timestamp']
+    timeTaken = (int(time.time())-int(currentTimestamp))/60 #Seconds converted to min
+    print(timeTaken)
 
     #GET VIDEOS INFO ##################
     df_questions = pd.read_csv("static/extraInfo/questions.csv", sep=";", header=0)
@@ -118,7 +122,7 @@ def finalForm():
 
             complete_list_answers+=list_answers_video
         #SAVE ANSWERS:
-        complete_list_answers = [annotatorID, gender, englishLevel, studies, int(age), nationality, race]+complete_list_answers
+        complete_list_answers = [annotatorID, gender, englishLevel, studies, int(age), nationality, race, timeTaken]+complete_list_answers
         insert_annotation(conn,values2insert=complete_list_answers,table_name=TABLE_NAME)
         conn.close()
 
@@ -150,8 +154,6 @@ def checkAnnotations():
         df_videos.to_csv("static/extraInfo/videos.csv", sep=",", header=True, index=False)
         #Calculate prob matrix again:
         create_probability_table()
-
-
         finalTemplate = get_checkAnnotations()
 
 

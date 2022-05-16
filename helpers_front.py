@@ -250,7 +250,7 @@ def create_header_HTML():
        <div class="testbox">"""
     return hed
 
-def create_header_videos(annotatorID, gender, englishLevel, studies,age,nationality,race):
+def create_header_videos(annotatorID, gender, englishLevel, studies,age,nationality,race, timestamp):
     hed = create_header_HTML()
 
 
@@ -268,6 +268,7 @@ def create_header_videos(annotatorID, gender, englishLevel, studies,age,national
     form_def += """<input type="hidden" id="age" name="age" value="{age}"/>""".format(age=age)
     form_def += """<input type="hidden" id="nationality" name="nationality" value="{nationality}"/>""".format(nationality=nationality)
     form_def += """<input type="hidden" id="race" name="race" value="{race}"/>""".format(race=race)
+    form_def += """<input type="hidden" id="timestamp" name="timestamp" value="{timestamp}"/>""".format(timestamp=timestamp)
 
     header = hed+form_def
     return header

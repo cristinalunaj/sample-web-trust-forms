@@ -7,7 +7,7 @@ def create_table(conn, table_name="trustTable"):
     cur = conn.cursor()
     df_questions = pd.read_csv("static/extraInfo/questions.csv", sep=";", header=0)
     type_question = ["bool", "smallint", "smallint","smallint","smallint","smallint","smallint","varchar","smallint","smallint","varchar"]
-    command ="CREATE TABLE IF NOT EXISTS "+table_name+" (id serial PRIMARY KEY, AnnotatorID varchar, gender varchar, englishLevel varchar, studyLevel varchar, age smallint, nationality varchar, race varchar"
+    command ="CREATE TABLE IF NOT EXISTS "+table_name+" (id serial PRIMARY KEY, AnnotatorID varchar, gender varchar, englishLevel varchar, studyLevel varchar, age smallint, nationality varchar, race varchar, timeTaken smallint"
 
     for videoi in range(N_VIDEOS):
         command += ", IDv" + str(videoi) + " varchar"
@@ -48,14 +48,14 @@ def remove_values_table(conn, table_name="trusttable"):
 def insert_annotation(conn, values2insert=[], table_name="trusttable"):
     cur = conn.cursor()
     df_questions = pd.read_csv("static/extraInfo/questions.csv", sep=";", header=0)
-    command = "INSERT INTO "+table_name+" (annotatorID, gender, englishLevel, studylevel, age, nationality, race"
+    command = "INSERT INTO "+table_name+" (annotatorID, gender, englishLevel, studylevel, age, nationality, race, timeTaken"
 
     for videoi in range(N_VIDEOS):
         command += ", IDv" + str(videoi)
         for i, rowQuestion in df_questions.iterrows():
             command+=", "+rowQuestion["ID"]+"v"+str(videoi)
         command += ", otherTextAreav" + str(videoi)
-    command += ") VALUES (%s, %s, %s, %s, %s, %s, %s" + "".join([", %s"]*N_VIDEOS*(len(df_questions)+2))+")"
+    command += ") VALUES (%s, %s, %s, %s, %s, %s, %s, %s" + "".join([", %s"]*N_VIDEOS*(len(df_questions)+2))+")"
     cur.execute(command, values2insert)
     conn.commit()
     cur.close()
