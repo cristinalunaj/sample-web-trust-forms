@@ -156,7 +156,6 @@ def checkAnnotations():
         create_probability_table()
         finalTemplate = get_checkAnnotations()
 
-
     return finalTemplate
 
 
@@ -168,20 +167,28 @@ def get_checkAnnotations():
     conn = psycopg2.connect(DATABASE_URL, sslmode='require')
     #################################
     dict_annotations = count_annotations(conn, table_name=TABLE_NAME)
+    dict_nationalities = check_nationalities(conn, table_name=TABLE_NAME)
+    count_per_nationalities = count_annotations_per_nationalities(conn, dict_nationalities,table_name=TABLE_NAME)
     conn.close()
     # Check for differences between backup_videos and videos:
     df_videos_backup = pd.read_csv("static/extraInfo/videos_backup.csv", sep=",", header=0)
     df_videos = pd.read_csv("static/extraInfo/videos.csv", sep=",", header=0)
     videosOnlyInBackup = set(list(df_videos_backup["video"])).difference(set(list(df_videos["video"])))
 
+    #HEADER TABLE
     html = '<table><tr>' \
            '<th> Form </th>' \
            '<th> VideoID </th>' \
            '<th> Counter </th>' \
-           '<th> Remove/Recover Video </th>' \
-           '</tr>'
+           '<th> Remove/Recover Video </th>'
 
 
+    for nationality in dict_nationalities:
+        html += '<th> '+nationality[0]+' </th>'
+
+    html+='</tr>'
+
+    #BODY TABLE
     for key in list(dict_annotations.keys()):
         if (dict_annotations[key] >= MINANNOTATIONS):
             style2add = 'style="color:red;"'
@@ -197,13 +204,18 @@ def get_checkAnnotations():
                 '<td><form id="formv'+str(key)+'" method="post" action="/checkAnnotations"><input type="hidden" name="id" value="'+str(key)+'" /><input type="hidden" name="action2do" value="'+str(tagButton)+'" /></form></td>' \
                 '<td>' + str(key) + '</td>' \
                 '<td ' + style2add + '>' + str(dict_annotations[key]) + '</td>' \
-                '<td><input class="btn-block" form="formv'+str(key)+'" type="submit" id="v' + key + '" value="'+tagButton+'"></td>'    \
-                '</tr>'
-    html += '</table>'
-    #
-    #'<td><form action="/checkAnnotations" method="post"><input type="submit" class="btn-block" value="Remove"></form></td>' \
+                '<td><input class="btn-block" form="formv' + str(key) + '" type="submit" id="v' + key + '" value="' + tagButton + '"></td>'
 
-    finalTemplate = hed + html + """</div></body></html>"""
+        if(key in count_per_nationalities.keys()):
+            for nationality in dict_nationalities:
+                 html +='<td>' + str(count_per_nationalities[key][nationality[0]]) + '</td>'
+        else:
+            for nationality in dict_nationalities:
+                 html +='<td>' + str(0) + '</td>'
+
+        html += '</tr>'
+    #'<td><form action="/checkAnnotations" method="post"><input type="submit" class="btn-block" value="Remove"></form></td>' \
+    finalTemplate = hed + html + """</table></div></body></html>"""
     return finalTemplate
 
 

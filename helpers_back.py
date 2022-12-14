@@ -74,10 +74,35 @@ def count_annotations(conn, table_name="trusttable"):
         mobile_records = cur.fetchall()
         for row in mobile_records:
             dict_videos[row[0]]+=row[1]
-
     conn.commit()
     cur.close()
     return dict_videos
 
+def check_nationalities(conn, table_name="trusttable"):
+    cur = conn.cursor()
+    command = "SELECT DISTINCT nationality FROM "+table_name+";"
+    cur.execute(command)
+    mobile_records = cur.fetchall()
+    conn.commit()
+    cur.close()
+    return mobile_records
 
+def count_annotations_per_nationalities(conn, nationalities, table_name="trusttable"):
+    nationalities = [item for t in nationalities for item in t]
+    dict_nationalities_deflt = dict.fromkeys(nationalities.copy(), 0)
+    dict_videos = {}
 
+    cur = conn.cursor()
+    for nationality in nationalities:
+        for i in range(N_VIDEOS):
+            command = "SELECT IDv"+str(i)+", count(*) FROM "+table_name+" where nationality='"+nationality+"' GROUP BY IDv"+str(i)+";"
+            cur.execute(command)
+            mobile_records = cur.fetchall()
+            for row in mobile_records:
+                if(not row[0] in dict_videos.keys()):
+                    dict_videos[row[0]] = dict_nationalities_deflt.copy()
+                dict_videos[row[0]][nationality] += row[1]
+
+    conn.commit()
+    cur.close()
+    return dict_videos
